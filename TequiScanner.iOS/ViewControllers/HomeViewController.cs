@@ -3,6 +3,8 @@ using AVFoundation;
 using Foundation;
 using Photos;
 using TequiScanner.iOS.Components;
+using TequiScanner.Shared.Model;
+using TequiScanner.Shared.Services;
 using UIKit;
 namespace TequiScanner.iOS.ViewControllers
 {
@@ -27,7 +29,7 @@ namespace TequiScanner.iOS.ViewControllers
 
         private void SetupUI() {
 
-            View.BackgroundColor = UIColor.FromRGB(230, 230, 230); 
+            View.BackgroundColor = Colors.BackgroundColor; 
             _takePhotoButton = new HighlightedButton(UIColor.Green)
             {
                 TranslatesAutoresizingMaskIntoConstraints = false
@@ -93,7 +95,7 @@ namespace TequiScanner.iOS.ViewControllers
             this.DismissViewController(true, null);
         }
 
-        private void Camera_FinishedPickingMedia(object sender, UIImagePickerMediaPickedEventArgs mediaPicker)
+        private async void Camera_FinishedPickingMedia(object sender, UIImagePickerMediaPickedEventArgs mediaPicker)
         {
 
             UIImage originalImage = mediaPicker.Info[UIImagePickerController.OriginalImage] as UIImage;
@@ -102,10 +104,23 @@ namespace TequiScanner.iOS.ViewControllers
 
             byte[] dataBytesArray = imgData.ToArray();
 
-
             this.DismissModalViewController(true);
+            RecognitionResult response = await new ComputerVisionService().RecognizeTextService(dataBytesArray);
 
-            this.NavigationController.PushViewController(new TextDisplayController(), true);
+
+            nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
+            nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Height;
+
+            this.NavigationController.PushViewController(new TextDisplayController(response, height, width), true);
+            /*
+            UIAlertView alert = new UIAlertView()
+            {
+                Title = "Error",
+                Message = response.Status
+            };
+            alert.AddButton("Cancel");
+            alert.Show();
+            */
         }
 
 

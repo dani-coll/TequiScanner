@@ -13,6 +13,7 @@
     <Folder Include="Services\" />
     <Folder Include="Model\" />
     <Folder Include="Services\Interfaces\" />
+    <Folder Include="Constants\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />

@@ -4,6 +4,9 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System;
 using TequiScanner.Shared.Services.Intefaces;
+using System.Net.Http.Headers;
+using TequiScanner.Shared.Constants;
+using System.Linq;
 
 namespace TequiScanner.Shared.Services
 {
@@ -30,22 +33,28 @@ namespace TequiScanner.Shared.Services
         /// <returns></returns>
         public async Task<RecognitionResult> RecognizeTextService(byte[] imageBytes)
         {
-            var httpClient = new HttpClient();
-
-            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _key);
+            var httpClient = BuildClient();
+            var byteContent = new ByteArrayContent(imageBytes);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 
             try
             {
-                var byteContent = new ByteArrayContent(imageBytes);
                 var response = await httpClient.PostAsync(_analyseImageUri, byteContent);
 
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var imageResult = JsonConvert.DeserializeObject<RecognitionResult>(json);
+                    var operationLocationRequest = GetOperationLocation(response.Headers);
 
-                    return imageResult;
+                    var getReponse = await httpClient.GetAsync(operationLocationRequest);
+                    var jsonResult = getReponse.Content.ReadAsStringAsync().Result;
+
+                    var analyticsResponse = JsonConvert.DeserializeObject<AnalyticsResponse>(jsonResult);
+
+                    return analyticsResponse.Status.Equals("Succeeded")
+                        ? analyticsResponse.RecognitionResult
+                        : null;
                 }
 
                 throw new Exception(json);
@@ -55,6 +64,18 @@ namespace TequiScanner.Shared.Services
                 Console.Write(exception.Message);
                 throw exception;
             }
+        }
+
+        private string GetOperationLocation(HttpResponseHeaders headers)
+        {
+            return headers.ToDictionary(l => l.Key, k => k.Value)[ApiHeaders.OperationLocation].First();
+        }
+
+        private HttpClient BuildClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add(ApiHeaders.SubscriptionKey, _key);
+            return client;
         }
     }
 }
