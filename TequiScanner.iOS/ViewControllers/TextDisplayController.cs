@@ -70,6 +70,8 @@ namespace TequiScanner.iOS.ViewControllers
                 scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Top, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, topPosition));
                 scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, rightPosition));
                 scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, bottomPosition));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Right, 1, 0));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Bottom, 1, 0));
 
             }
         }
