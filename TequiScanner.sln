@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TequiScanner.iOS", "TequiSc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TequiScanner.Shared", "TequiScanner.Shared\TequiScanner.Shared.csproj", "{DA01043D-897D-44D2-84AC-1778D7A985A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerVisionTest", "ComputerVisionTest\ComputerVisionTest.csproj", "{339B0797-BE1E-4577-A79C-4B99F56AEFF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,18 @@ Global
 		{DA01043D-897D-44D2-84AC-1778D7A985A7}.Release|iPhone.Build.0 = Release|Any CPU
 		{DA01043D-897D-44D2-84AC-1778D7A985A7}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{DA01043D-897D-44D2-84AC-1778D7A985A7}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|iPhone.Build.0 = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{339B0797-BE1E-4577-A79C-4B99F56AEFF4}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
