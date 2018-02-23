@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <Compile Remove="Class1.cs" />
+    <Compile Remove="Services\StorageService.cs" />
+    <Compile Remove="Services\Interfaces\IStorageService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
@@ -14,5 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Autofac" Version="4.6.2" />
   </ItemGroup>
 </Project>

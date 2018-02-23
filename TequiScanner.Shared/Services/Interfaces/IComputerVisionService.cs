@@ -5,6 +5,6 @@ namespace TequiScanner.Shared.Services.Intefaces
 {
     public interface IComputerVisionService
     {
-        Task<AnalyticsResponse> RecognizeTextService(byte[] imageBytes);
+        Task<RecognitionResult> RecognizeTextService(byte[] imageBytes);
     }
 }

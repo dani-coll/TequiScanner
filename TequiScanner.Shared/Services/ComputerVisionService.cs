@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System;
-using System.Text;
 using TequiScanner.Shared.Services.Intefaces;
 
 namespace TequiScanner.Shared.Services
@@ -21,7 +20,7 @@ namespace TequiScanner.Shared.Services
         /// <summary>
         /// Documentation for the API: https://www.microsoft.com/cognitive-services/en-us/computer-vision-api
         /// </summary>
-        private readonly string _analyseImageUri = "https://westeurope.api.cognitive.microsoft.com/vision/v1.0/recognizeText?handwriting=true";
+        private readonly string _analyseImageUri = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/recognizeText?handwriting=true";
 
         #endregion
 
@@ -29,7 +28,7 @@ namespace TequiScanner.Shared.Services
         /// This operation extracts a rich set of visual features based on the image content. 
         /// </summary>
         /// <returns></returns>
-        public async Task<AnalyticsResponse> RecognizeTextService(byte[] imageBytes)
+        public async Task<RecognitionResult> RecognizeTextService(byte[] imageBytes)
         {
             var httpClient = new HttpClient();
 
@@ -37,16 +36,14 @@ namespace TequiScanner.Shared.Services
 
             try
             {
-                var streamContent = new StringContent(Convert.ToBase64String(imageBytes), Encoding.UTF8, "application/octet-stream");
-
-                var response = await httpClient.PostAsync(_analyseImageUri, streamContent);
+                var byteContent = new ByteArrayContent(imageBytes);
+                var response = await httpClient.PostAsync(_analyseImageUri, byteContent);
 
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-
-                    var imageResult = JsonConvert.DeserializeObject<AnalyticsResponse>(json);
+                    var imageResult = JsonConvert.DeserializeObject<RecognitionResult>(json);
 
                     return imageResult;
                 }
