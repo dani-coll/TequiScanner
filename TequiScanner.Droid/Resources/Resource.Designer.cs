@@ -44,6 +44,9 @@ namespace TequiScanner.Droid
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f040002
+			public const int apiErrorMessage = 2130968578;
+			
 			// aapt resource value: 0x7f040001
 			public const int browsePhotoBtn = 2130968577;
 			
@@ -66,6 +69,9 @@ namespace TequiScanner.Droid
 			// aapt resource value: 0x7f020000
 			public const int Main = 2130837504;
 			
+			// aapt resource value: 0x7f020001
+			public const int ScannerResult = 2130837505;
+			
 			static Layout()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -78,6 +84,9 @@ namespace TequiScanner.Droid
 		
 		public partial class String
 		{
+			
+			// aapt resource value: 0x7f030003
+			public const int api_error_message = 2130903043;
 			
 			// aapt resource value: 0x7f030000
 			public const int app_name = 2130903040;

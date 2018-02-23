@@ -8,6 +8,7 @@ using System.IO;
 using Android.Content.PM;
 using System.Collections.Generic;
 using System;
+using TequiScanner.Shared.Services;
 
 namespace TequiScanner.Droid
 {
@@ -17,7 +18,6 @@ namespace TequiScanner.Droid
         private const int _TakePictureRequestCode = 0;
 
         private Java.IO.File _picturesDirectory;
-        
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -67,7 +67,11 @@ namespace TequiScanner.Droid
                 switch (requestCode)
                 {
                     case _TakePictureRequestCode:
-                        //TODO call azure api
+                        // go to scanner result activity
+                        Intent intent = new Intent(this, typeof(ScannerResultActivity));
+                        intent.PutExtra("picturePath", _picturesDirectory);
+                        StartActivity(intent);
+
                         break;
                 }
             }
