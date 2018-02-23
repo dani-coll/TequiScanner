@@ -1,11 +1,7 @@
-﻿using System;
-using UIKit;
+﻿using UIKit;
 namespace TequiScanner.iOS.ViewControllers
 {
-    public class BaseViewController : UIViewController
+    public abstract class BaseViewController : UIViewController
     {
-        public BaseViewController()
-        {
-        }
     }
 }
