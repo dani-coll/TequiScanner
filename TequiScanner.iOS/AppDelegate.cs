@@ -30,7 +30,6 @@ namespace TequiScanner.iOS
             UINavigationController navigationController = new UINavigationController(new HomeViewController());
             Window.RootViewController = navigationController;
             Window.MakeKeyAndVisible();
-            Window.RootViewController = new BaseViewController();
 
 
             return true;
