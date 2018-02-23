@@ -84,5 +84,11 @@
     <Folder Include="ViewControllers\" />
     <Folder Include="Components\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TequiScanner.Shared\TequiScanner.Shared.csproj">
+      <Project>{DA01043D-897D-44D2-84AC-1778D7A985A7}</Project>
+      <Name>TequiScanner.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
