@@ -1,4 +1,5 @@
 ﻿using Foundation;
+using TequiScanner.iOS.ViewControllers;
 using UIKit;
 
 namespace TequiScanner.iOS
@@ -26,6 +27,7 @@ namespace TequiScanner.iOS
 
             // make the window visible
             Window.MakeKeyAndVisible();
+            Window.RootViewController = new BaseViewController();
 
             return true;
         }
