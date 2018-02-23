@@ -41,6 +41,25 @@ namespace TequiScanner.Droid
 			}
 		}
 		
+		public partial class Id
+		{
+			
+			// aapt resource value: 0x7f040001
+			public const int browsePhotoBtn = 2130968577;
+			
+			// aapt resource value: 0x7f040000
+			public const int takePhotoBtn = 2130968576;
+			
+			static Id()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Id()
+			{
+			}
+		}
+		
 		public partial class Layout
 		{
 			
@@ -62,6 +81,12 @@ namespace TequiScanner.Droid
 			
 			// aapt resource value: 0x7f030000
 			public const int app_name = 2130903040;
+			
+			// aapt resource value: 0x7f030002
+			public const int browse_photo = 2130903042;
+			
+			// aapt resource value: 0x7f030001
+			public const int take_photo = 2130903041;
 			
 			static String()
 			{
