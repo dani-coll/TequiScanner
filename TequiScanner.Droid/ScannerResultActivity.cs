@@ -106,8 +106,6 @@ namespace TequiScanner.Droid
                         });
                     }
                 })).Start();
-
-
             }
         }
 
@@ -128,7 +126,7 @@ namespace TequiScanner.Droid
                 layout.LeftMargin = line.BoundingBox[0];
                 layout.TopMargin = line.BoundingBox[1];
 
-                _textZone.AddView(textView);
+                _textZone.AddView(textView, layout);
             }
             _textZone.Visibility = ViewStates.Visible;
 
