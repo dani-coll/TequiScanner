@@ -17,4 +17,10 @@
         android:layout_centerInParent="true"
         app:mainColor="@color/main_color"
         app:secondaryColor="@color/secondary_color" />
+    <FrameLayout
+        android:id="@+id/textZone"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:visibility="gone" >        
+    </FrameLayout>
 </RelativeLayout>
