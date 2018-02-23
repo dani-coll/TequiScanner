@@ -26,8 +26,11 @@ namespace TequiScanner.iOS
             // Window.RootViewController = myViewController;
 
             // make the window visible
+
+            UINavigationController navigationController = new UINavigationController(new HomeViewController());
+            Window.RootViewController = navigationController;
             Window.MakeKeyAndVisible();
-            Window.RootViewController = new BaseViewController();
+
 
             return true;
         }

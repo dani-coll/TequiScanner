@@ -64,7 +64,12 @@
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
+    <Compile Include="ViewControllers\HomeViewController.cs" />
+    <Compile Include="Components\HighlightedButton.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="ViewControllers\TextDisplayController.cs" />
     <Compile Include="ViewControllers\BaseViewController.cs" />
+    <Compile Include="Colors.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewControllers\" />
+    <Folder Include="Components\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
