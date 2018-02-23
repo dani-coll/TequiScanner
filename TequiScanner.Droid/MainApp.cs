@@ -11,19 +11,32 @@ using Android.Views;
 using Android.Widget;
 using Autofac;
 using TequiScanner.Shared.Services;
+using TequiScanner.Shared.Services.Intefaces;
 
 namespace TequiScanner.Droid
 {
     [Application]
     public class MainApp : Application
     {
-        public static IContainer Builder;
+        public static IContainer Container { get; set; }
 
         public MainApp(IntPtr handle, JniHandleOwnership transfer)
             : base(handle, transfer)
         {
-            // register ioc services
-            Builder = new ContainerBuilder().Build(); 
+        }
+
+        public override void OnCreate()
+        {
+            Initialize();
+
+            base.OnCreate();
+        }
+
+        private static void Initialize()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(new ComputerVisionService()).As<IComputerVisionService>();
+            MainApp.Container = builder.Build();
         }
     }
 }
