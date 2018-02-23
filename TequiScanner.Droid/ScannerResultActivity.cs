@@ -18,6 +18,7 @@ using Android.Media;
 using Java.IO;
 using TequiScanner.Shared.Model;
 using System.Linq;
+using System.Threading;
 
 namespace TequiScanner.Droid
 {
@@ -50,7 +51,7 @@ namespace TequiScanner.Droid
             _errorView = FindViewById<TextView>(Resource.Id.apiErrorMessage);
             _textZone = FindViewById<FrameLayout>(Resource.Id.textZone);
         }
-    
+
 
         protected async override void OnResume()
         {
@@ -63,37 +64,50 @@ namespace TequiScanner.Droid
 
             if (!string.IsNullOrEmpty(_picturePath))
             {
-                _pictureBytes = System.IO.File.ReadAllBytes(_picturePath);
-
-                Bitmap bitmap = await BitmapFactory.DecodeByteArrayAsync(
-                    _pictureBytes, 0, _pictureBytes.Length);
-
-                Bitmap cropped = Bitmap.CreateScaledBitmap(bitmap, 1920, 1080, false);
-                byte[] byteArray;
-                using (var stream = new MemoryStream())
+                new Thread(new ThreadStart(async () =>
                 {
-                    await cropped.CompressAsync(Bitmap.CompressFormat.Jpeg, 100, stream);
-                    byteArray = stream.ToArray();
-                }
+                    _pictureBytes = System.IO.File.ReadAllBytes(_picturePath);
 
-                try
-                {
-                    var result = await _visionService.RecognizeTextService(byteArray);
+                    Bitmap bitmap = await BitmapFactory.DecodeByteArrayAsync(
+                        _pictureBytes, 0, _pictureBytes.Length);
 
-                    _loadingView.StopOk();
-                    _loadingView.Visibility = ViewStates.Gone;
+                    Bitmap cropped = Bitmap.CreateScaledBitmap(bitmap, 1920, 1080, false);
+                    byte[] byteArray;
+                    using (var stream = new MemoryStream())
+                    {
+                        await cropped.CompressAsync(Bitmap.CompressFormat.Jpeg, 100, stream);
+                        byteArray = stream.ToArray();
+                    }
 
-                    if (result == null) throw new Exception("");
+                    try
+                    {
+                        var result = await _visionService.RecognizeTextService(byteArray);
 
-                    PrintText(result.Lines);
-                }
-                catch (Exception e)
-                {
-                    if (!string.IsNullOrEmpty(e.Message))
-                        _errorView.Text = e.Message;
+                        RunOnUiThread(() =>
+                        {
+                            _loadingView.StopOk();
+                            _loadingView.Visibility = ViewStates.Gone;
 
-                    _errorView.Visibility = ViewStates.Visible;
-                }                
+                            if (result == null) throw new Exception("");
+
+                            PrintText(result.Lines);
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        if (!string.IsNullOrEmpty(e.Message))
+                            _errorView.Text = e.Message;
+
+                        RunOnUiThread(() =>
+                        {
+                            _loadingView.StopOk();
+                            _loadingView.Visibility = ViewStates.Gone;
+                            _errorView.Visibility = ViewStates.Visible;
+                        });
+                    }
+                })).Start();
+
+
             }
         }
 
@@ -107,14 +121,17 @@ namespace TequiScanner.Droid
                 List<string> words = line.Words.Select(w => w.Text).ToList();
                 textView.Text = string.Join(" ", words);
 
-                FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(textView.Width, textView.Height);
+                var lineWidth = line.BoundingBox[2] - line.BoundingBox[0];
+                var lineHeight = line.BoundingBox[7] - line.BoundingBox[1];
+
+                FrameLayout.LayoutParams layout = new FrameLayout.LayoutParams(lineWidth, lineHeight);
                 layout.LeftMargin = line.BoundingBox[0];
                 layout.TopMargin = line.BoundingBox[1];
 
-                _textZone.AddView(textView, layout);                
+                _textZone.AddView(textView);
             }
-
             _textZone.Visibility = ViewStates.Visible;
+
         }
     }
 }
