@@ -16,6 +16,7 @@ namespace TequiScanner.Droid
     public class MainActivity : Activity
     {
         private const int _TakePictureRequestCode = 0;
+        private const int _BrowsePictureRequestCode = 1;
 
         private Java.IO.File _picturesDirectory;
         private string _pictureName;
@@ -56,6 +57,12 @@ namespace TequiScanner.Droid
                 browsePhoto.Click += delegate
                 {
                     // Open folder browser
+                    var imageIntent = new Intent();
+                    imageIntent.SetType("image/*");
+                    imageIntent.SetAction(Intent.ActionGetContent);
+                    StartActivityForResult(
+                        Intent.CreateChooser(imageIntent, "Select photo"),
+                        _BrowsePictureRequestCode);
                 };
             }
         }
@@ -76,6 +83,11 @@ namespace TequiScanner.Droid
                         intent.PutExtra("picturePath", fullPath);
                         StartActivity(intent);
 
+                        break;
+                    case _BrowsePictureRequestCode:
+                        Intent intent2 = new Intent(this, typeof(ScannerResultActivity));
+                        intent2.PutExtra("picturePath", data.Data.Path);
+                        StartActivity(intent2);
                         break;
                 }
             }
