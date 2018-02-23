@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using AVFoundation;
 using Foundation;
-using Photos;
 using TequiScanner.iOS.Components;
 using TequiScanner.Shared.Model;
 using TequiScanner.Shared.Services;
@@ -12,7 +11,6 @@ namespace TequiScanner.iOS.ViewControllers
 {
     public class HomeViewController : BaseViewController
     {
-
         private UIButton _takePhotoButton;
         private UIButton _galleryPhotoButton;
         private UIActivityIndicatorView _activityIndicator;
@@ -23,44 +21,19 @@ namespace TequiScanner.iOS.ViewControllers
 
         public HomeViewController()
         {
-            _resultList = new List<RecognitionResult>();
-        }
-
-
-        public override void ViewWillAppear(bool animated)
-        {
-            base.ViewWillAppear(animated);
             SetupUI();
-
         }
-
 
         private void SetupUI()
         {
-
             View.BackgroundColor = Colors.BackgroundColor;
-            _takePhotoButton = new HighlightedButton(UIColor.Green)
-            {
-                TranslatesAutoresizingMaskIntoConstraints = false
-            };
-            _takePhotoButton.ContentEdgeInsets = new UIEdgeInsets(10, 10, 10, 10);
-            _takePhotoButton.SetTitle("TAKE NEW PHOTO", UIControlState.Normal);
-
-            _takePhotoButton.TouchUpInside += TakePhotoButton_TouchUpInside;
-            _takePhotoButton.Layer.CornerRadius = 5;
+            _takePhotoButton = CreateButton("take photo".ToUpper(), TakePhotoButton_TouchUpInside);
             View.AddSubview(_takePhotoButton);
 
             View.AddConstraint(NSLayoutConstraint.Create(_takePhotoButton, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterX, 1, 0));
             View.AddConstraint(NSLayoutConstraint.Create(_takePhotoButton, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterY, 1, 0));
 
-            _galleryPhotoButton = new HighlightedButton(UIColor.Green)
-            {
-                TranslatesAutoresizingMaskIntoConstraints = false
-            };
-            _galleryPhotoButton.ContentEdgeInsets = new UIEdgeInsets(10, 10, 10, 10);
-
-            _galleryPhotoButton.SetTitle("BROWSE GALLERY", UIControlState.Normal);
-            _galleryPhotoButton.TouchUpInside += GalleryPhotoButton_TouchUpInside;
+            _galleryPhotoButton = CreateButton("browser gallery".ToUpper(), GalleryPhotoButton_TouchUpInside);
 
             View.AddSubview(_galleryPhotoButton);
 
@@ -71,20 +44,30 @@ namespace TequiScanner.iOS.ViewControllers
             {
                 TranslatesAutoresizingMaskIntoConstraints = false
             };
-            _activityIndicator.StartAnimating();
-            _activityIndicator.Hidden = true;
             View.AddSubview(_activityIndicator);
 
             View.AddConstraint(NSLayoutConstraint.Create(_activityIndicator, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterX, 1, 0));
             View.AddConstraint(NSLayoutConstraint.Create(_activityIndicator, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterY, 1, 0));
+            ToggleLoading(false);
+        }
 
+        private UIButton CreateButton(string text, EventHandler handler)
+        {
+            var button = new HighlightedButton(UIColor.Blue)
+            {
+                TranslatesAutoresizingMaskIntoConstraints = false
+            };
+            button.ContentEdgeInsets = new UIEdgeInsets(10, 10, 10, 10);
+            button.SetTitle(text, UIControlState.Normal);
 
+            button.TouchUpInside += handler;
+            button.Layer.CornerRadius = 6;
+            return button;
         }
 
         private void TakePhotoButton_TouchUpInside(object sender, EventArgs e)
         {
             this._fromGallery = false;
-
             TakePicture();
         }
 
@@ -96,7 +79,6 @@ namespace TequiScanner.iOS.ViewControllers
 
         private void TakePicture()
         {
-
             if (UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) || _fromGallery)
             {
                 UIImagePickerController imagePickerController = new UIImagePickerController()
@@ -118,8 +100,6 @@ namespace TequiScanner.iOS.ViewControllers
                 imagePickerController.Canceled += CancelCamera_Handler;
                 imagePickerController.FinishedPickingMedia += Camera_FinishedPickingMedia;
             }
-
-
         }
 
         private void CancelCamera_Handler(object sender, EventArgs e)
@@ -129,41 +109,44 @@ namespace TequiScanner.iOS.ViewControllers
 
         private async void Camera_FinishedPickingMedia(object sender, UIImagePickerMediaPickedEventArgs mediaPicker)
         {
-            _activityIndicator.Hidden = false;
+            ToggleLoading(true);
             _takePhotoButton.Hidden = true;
             _galleryPhotoButton.Hidden = true;
             UIImage originalImage = mediaPicker.Info[UIImagePickerController.OriginalImage] as UIImage;
             nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
             nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Width;
-
-            originalImage = MaxResizeImage(originalImage, (float)width, (float)height);
+            if(!_fromGallery) originalImage = MaxResizeImage(originalImage, (float)width/8, (float)height/8);
             
             NSData imgData = originalImage.AsJPEG(0.1f);
             byte[] dataBytesArray = imgData.ToArray();
 
             this.DismissModalViewController(true);
-            RecognitionResult response = await new ComputerVisionService().RecognizeTextService(dataBytesArray);
-            if (response != null)
-            {
-                _resultList.Add(response);
 
-                this.NavigationController.PushViewController(new TextDisplayController(response, height, width, 0), true);
-            }
-            else
+            try
             {
-                UIAlertView alert = new UIAlertView()
+                RecognitionResult response = await new ComputerVisionService().RecognizeTextService(dataBytesArray);
+                if (response != null)
                 {
-                    Title = "Error",
-                    Message = "API Fail"
-                };
-                alert.AddButton("Cancel");
-                alert.Show();
+
+                    this.NavigationController.PushViewController(new TextDisplayController(response, height, width, 0), true);
+                }
+                else
+                {
+                    UIAlertView alert = new UIAlertView()
+                    {
+                        Title = "Error",
+                        Message = "API Fail"
+                    };
+                    alert.AddButton("Cancel");
+                    alert.Show();
+                }
             }
-            _takePhotoButton.Hidden = false;
-            _galleryPhotoButton.Hidden = false;
-            _activityIndicator.Hidden = true;
-
-
+            finally
+            {
+                _takePhotoButton.Hidden = false;
+                _galleryPhotoButton.Hidden = false;
+                ToggleLoading(false);
+            }
         }
 
         UIImage MaxResizeImage(UIImage sourceImage, float maxWidth, float maxHeight)
@@ -181,5 +164,18 @@ namespace TequiScanner.iOS.ViewControllers
         }
 
 
+        private void ToggleLoading(bool showLoading)
+        {
+            if (showLoading)
+            {
+                _activityIndicator.Hidden = false;
+                _activityIndicator.StartAnimating();
+            }
+            else
+            {
+                _activityIndicator.Hidden = true;
+                _activityIndicator.StopAnimating();
+            }
+        }
     }
 }
