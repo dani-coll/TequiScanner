@@ -61,8 +61,9 @@ namespace TequiScanner.iOS.ViewControllers
                 {
                     UIFont font = UIFont.FromName("Helvetica", ((word.BoundingBox[7] - word.BoundingBox[1])/3)+1);
 
-                    UILabel label = new UILabel()
+                    UITextField label = new UITextField()
                     {
+                        BackgroundColor = UIColor.Clear,
                         TranslatesAutoresizingMaskIntoConstraints = false,
                         Text = word.Text,
                         Font = font
