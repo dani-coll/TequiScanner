@@ -11,12 +11,14 @@ namespace TequiScanner.iOS.ViewControllers
 
         private nfloat _imageHeight;
         private nfloat _imageWidth;
+        private nfloat _division;
 
-        public TextDisplayController(RecognitionResult analysis, nfloat imageHeight, nfloat imageWidth)
+        public TextDisplayController(RecognitionResult analysis, nfloat imageHeight, nfloat imageWidth, float division)
         {
             this._recognition = analysis;
             _imageHeight = imageHeight;
             _imageWidth = imageWidth;
+            _division = division;
         }
 
 
@@ -57,7 +59,7 @@ namespace TequiScanner.iOS.ViewControllers
 
                 foreach (Word word in line.Words)
                 {
-                    UIFont font = UIFont.FromName("Helvetica", word.BoundingBox[7] - word.BoundingBox[1]);
+                    UIFont font = UIFont.FromName("Helvetica", ((word.BoundingBox[7] - word.BoundingBox[1])/3)+1);
 
                     UILabel label = new UILabel()
                     {

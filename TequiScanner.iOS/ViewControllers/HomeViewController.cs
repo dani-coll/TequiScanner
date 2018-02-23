@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using AVFoundation;
 using Foundation;
 using Photos;
@@ -15,8 +17,13 @@ namespace TequiScanner.iOS.ViewControllers
         private UIButton _galleryPhotoButton;
         private UIActivityIndicatorView _activityIndicator;
 
+        private List<RecognitionResult> _resultList;
+
+        private bool _fromGallery;
+
         public HomeViewController()
         {
+            _resultList = new List<RecognitionResult>();
         }
 
 
@@ -72,24 +79,25 @@ namespace TequiScanner.iOS.ViewControllers
             View.AddConstraint(NSLayoutConstraint.Create(_activityIndicator, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterY, 1, 0));
 
 
-
         }
 
         private void TakePhotoButton_TouchUpInside(object sender, EventArgs e)
         {
+            this._fromGallery = false;
 
             TakePicture();
         }
 
         private void GalleryPhotoButton_TouchUpInside(object sender, EventArgs e)
         {
-            TakePicture(true);
+            this._fromGallery = true;
+            TakePicture();
         }
 
-        private void TakePicture(bool fromGallery = false)
+        private void TakePicture()
         {
 
-            if (UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) || fromGallery)
+            if (UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) || _fromGallery)
             {
                 UIImagePickerController imagePickerController = new UIImagePickerController()
                 {
@@ -97,7 +105,7 @@ namespace TequiScanner.iOS.ViewControllers
                     ModalPresentationStyle = UIModalPresentationStyle.FullScreen
                 };
 
-                if (!fromGallery)
+                if (!_fromGallery)
                 {
                     imagePickerController.SourceType = UIImagePickerControllerSourceType.Camera;
                     imagePickerController.ShowsCameraControls = true;
@@ -125,20 +133,21 @@ namespace TequiScanner.iOS.ViewControllers
             _takePhotoButton.Hidden = true;
             _galleryPhotoButton.Hidden = true;
             UIImage originalImage = mediaPicker.Info[UIImagePickerController.OriginalImage] as UIImage;
+            nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
+            nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Width;
 
+            originalImage = MaxResizeImage(originalImage, (float)width, (float)height);
+            
             NSData imgData = originalImage.AsJPEG(0.1f);
-
             byte[] dataBytesArray = imgData.ToArray();
 
             this.DismissModalViewController(true);
             RecognitionResult response = await new ComputerVisionService().RecognizeTextService(dataBytesArray);
             if (response != null)
             {
+                _resultList.Add(response);
 
-                nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
-                nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Height;
-
-                this.NavigationController.PushViewController(new TextDisplayController(response, height, width), true);
+                this.NavigationController.PushViewController(new TextDisplayController(response, height, width, 0), true);
             }
             else
             {
@@ -155,6 +164,20 @@ namespace TequiScanner.iOS.ViewControllers
             _activityIndicator.Hidden = true;
 
 
+        }
+
+        UIImage MaxResizeImage(UIImage sourceImage, float maxWidth, float maxHeight)
+        {
+            var sourceSize = sourceImage.Size;
+            var maxResizeFactor = Math.Max(maxWidth / sourceSize.Width, maxHeight / sourceSize.Height);
+            if (maxResizeFactor > 1) return sourceImage;
+            var width = maxResizeFactor * sourceSize.Width;
+            var height = maxResizeFactor * sourceSize.Height;
+            UIGraphics.BeginImageContext(new SizeF((float)width, (float)height));
+            sourceImage.Draw(new RectangleF(0, 0, (float)width, (float)height));
+            var resultImage = UIGraphics.GetImageFromCurrentImageContext();
+            UIGraphics.EndImageContext();
+            return resultImage;
         }
 
 

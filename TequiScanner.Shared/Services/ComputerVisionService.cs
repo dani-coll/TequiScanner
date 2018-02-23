@@ -66,7 +66,7 @@ namespace TequiScanner.Shared.Services
             catch (Exception exception)
             {
                 Console.Write(exception.Message);
-                throw exception;
+                return null;
             }
         }
 
