@@ -41,11 +41,36 @@ namespace TequiScanner.Droid
 			}
 		}
 		
+		public partial class Id
+		{
+			
+			// aapt resource value: 0x7f040002
+			public const int apiErrorMessage = 2130968578;
+			
+			// aapt resource value: 0x7f040001
+			public const int browsePhotoBtn = 2130968577;
+			
+			// aapt resource value: 0x7f040000
+			public const int takePhotoBtn = 2130968576;
+			
+			static Id()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Id()
+			{
+			}
+		}
+		
 		public partial class Layout
 		{
 			
 			// aapt resource value: 0x7f020000
 			public const int Main = 2130837504;
+			
+			// aapt resource value: 0x7f020001
+			public const int ScannerResult = 2130837505;
 			
 			static Layout()
 			{
@@ -60,8 +85,17 @@ namespace TequiScanner.Droid
 		public partial class String
 		{
 			
+			// aapt resource value: 0x7f030003
+			public const int api_error_message = 2130903043;
+			
 			// aapt resource value: 0x7f030000
 			public const int app_name = 2130903040;
+			
+			// aapt resource value: 0x7f030002
+			public const int browse_photo = 2130903042;
+			
+			// aapt resource value: 0x7f030001
+			public const int take_photo = 2130903041;
 			
 			static String()
 			{
