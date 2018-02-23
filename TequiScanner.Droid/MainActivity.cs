@@ -18,6 +18,7 @@ namespace TequiScanner.Droid
         private const int _TakePictureRequestCode = 0;
 
         private Java.IO.File _picturesDirectory;
+        private string _pictureName;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -42,9 +43,10 @@ namespace TequiScanner.Droid
                     Intent intent = new Intent(MediaStore.ActionImageCapture);
 
                     // Save taked picture into given folder
+                    _pictureName = String.Format("scanned_{0}.jpg", Guid.NewGuid());
                     var file = new Java.IO.File(
-                        _picturesDirectory, 
-                        String.Format("scanned_{0}.jpg", Guid.NewGuid()));
+                        _picturesDirectory,
+                        _pictureName);
 
                     intent.PutExtra(MediaStore.ExtraOutput, Android.Net.Uri.FromFile(file));
 
@@ -69,7 +71,9 @@ namespace TequiScanner.Droid
                     case _TakePictureRequestCode:
                         // go to scanner result activity
                         Intent intent = new Intent(this, typeof(ScannerResultActivity));
-                        intent.PutExtra("picturePath", _picturesDirectory);
+
+                        string fullPath = Path.Combine(_picturesDirectory.AbsolutePath, _pictureName);
+                        intent.PutExtra("picturePath", fullPath);
                         StartActivity(intent);
 
                         break;
