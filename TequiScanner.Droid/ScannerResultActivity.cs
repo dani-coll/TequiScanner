@@ -57,6 +57,7 @@ namespace TequiScanner.Droid
             base.OnResume();
 
             _errorView.Visibility = ViewStates.Gone;
+            _textZone.Visibility = ViewStates.Gone;
             _loadingView.Visibility = ViewStates.Visible;
             _loadingView.StartIndeterminate();
 
@@ -112,6 +113,8 @@ namespace TequiScanner.Droid
 
                 _textZone.AddView(textView, layout);                
             }
+
+            _textZone.Visibility = ViewStates.Visible;
         }
     }
 }
