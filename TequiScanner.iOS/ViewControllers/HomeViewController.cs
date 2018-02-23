@@ -27,9 +27,10 @@ namespace TequiScanner.iOS.ViewControllers
         }
 
 
-        private void SetupUI() {
+        private void SetupUI()
+        {
 
-            View.BackgroundColor = Colors.BackgroundColor; 
+            View.BackgroundColor = Colors.BackgroundColor;
             _takePhotoButton = new HighlightedButton(UIColor.Green)
             {
                 TranslatesAutoresizingMaskIntoConstraints = false
@@ -56,10 +57,11 @@ namespace TequiScanner.iOS.ViewControllers
             View.AddSubview(_galleryPhotoButton);
 
             View.AddConstraint(NSLayoutConstraint.Create(_galleryPhotoButton, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterX, 1, 0));
-            View.AddConstraint(NSLayoutConstraint.Create(_galleryPhotoButton, NSLayoutAttribute.Top, NSLayoutRelation.Equal,_takePhotoButton, NSLayoutAttribute.Bottom, 1, 10));
+            View.AddConstraint(NSLayoutConstraint.Create(_galleryPhotoButton, NSLayoutAttribute.Top, NSLayoutRelation.Equal, _takePhotoButton, NSLayoutAttribute.Bottom, 1, 10));
         }
 
-        private void TakePhotoButton_TouchUpInside(object sender, EventArgs e) {
+        private void TakePhotoButton_TouchUpInside(object sender, EventArgs e)
+        {
 
             TakePicture();
         }
@@ -69,25 +71,32 @@ namespace TequiScanner.iOS.ViewControllers
             TakePicture(true);
         }
 
-        private void TakePicture(bool fromGallery = false) {
+        private void TakePicture(bool fromGallery = false)
+        {
 
-            if (UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera))
+            if (UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera) || fromGallery)
             {
                 UIImagePickerController imagePickerController = new UIImagePickerController()
                 {
-                    SourceType = UIImagePickerControllerSourceType.Camera,
-                    ShowsCameraControls = true,
-                    CameraCaptureMode = UIImagePickerControllerCameraCaptureMode.Photo,
-                    ModalPresentationStyle = UIModalPresentationStyle.FullScreen,
+                    SourceType = UIImagePickerControllerSourceType.SavedPhotosAlbum,
+                    ModalPresentationStyle = UIModalPresentationStyle.FullScreen
                 };
-                if (fromGallery) imagePickerController.SourceType = UIImagePickerControllerSourceType.PhotoLibrary;
+
+                if (!fromGallery)
+                {
+                    imagePickerController.SourceType = UIImagePickerControllerSourceType.Camera;
+                    imagePickerController.ShowsCameraControls = true;
+                    imagePickerController.CameraCaptureMode = UIImagePickerControllerCameraCaptureMode.Photo;
+
+                }
+
                 UIImagePickerController.IsSourceTypeAvailable(UIImagePickerControllerSourceType.Camera);
                 this.PresentViewController(imagePickerController, true, null);
                 imagePickerController.Canceled += CancelCamera_Handler;
                 imagePickerController.FinishedPickingMedia += Camera_FinishedPickingMedia;
             }
 
-           
+
         }
 
         private void CancelCamera_Handler(object sender, EventArgs e)
@@ -100,27 +109,30 @@ namespace TequiScanner.iOS.ViewControllers
 
             UIImage originalImage = mediaPicker.Info[UIImagePickerController.OriginalImage] as UIImage;
 
-            NSData imgData = originalImage.AsJPEG(0.5f);
+            NSData imgData = originalImage.AsJPEG(0.1f);
 
             byte[] dataBytesArray = imgData.ToArray();
 
             this.DismissModalViewController(true);
             RecognitionResult response = await new ComputerVisionService().RecognizeTextService(dataBytesArray);
-
-
-            nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
-            nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Height;
-
-            this.NavigationController.PushViewController(new TextDisplayController(response, height, width), true);
-            /*
-            UIAlertView alert = new UIAlertView()
+            if (response != null)
             {
-                Title = "Error",
-                Message = response.Status
-            };
-            alert.AddButton("Cancel");
-            alert.Show();
-            */
+
+                nfloat height = originalImage.PreferredPresentationSizeForItemProvider.Height;
+                nfloat width = originalImage.PreferredPresentationSizeForItemProvider.Height;
+
+                this.NavigationController.PushViewController(new TextDisplayController(response, height, width), true);
+            }
+            else
+            {
+                UIAlertView alert = new UIAlertView()
+                {
+                    Title = "Error",
+                    Message = "API Fail"
+                };
+                alert.AddButton("Cancel");
+                alert.Show();
+            }
         }
 
 

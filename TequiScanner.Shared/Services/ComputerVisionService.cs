@@ -46,12 +46,15 @@ namespace TequiScanner.Shared.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var operationLocationRequest = GetOperationLocation(response.Headers);
+                    AnalyticsResponse analyticsResponse = null;
+                    while (analyticsResponse == null || analyticsResponse.Status.Equals("Running"))
+                    {
+                        var getReponse = await httpClient.GetAsync(operationLocationRequest);
+                        var jsonResult = getReponse.Content.ReadAsStringAsync().Result;
 
-                    var getReponse = await httpClient.GetAsync(operationLocationRequest);
-                    var jsonResult = getReponse.Content.ReadAsStringAsync().Result;
+                        analyticsResponse = JsonConvert.DeserializeObject<AnalyticsResponse>(jsonResult);
 
-                    var analyticsResponse = JsonConvert.DeserializeObject<AnalyticsResponse>(jsonResult);
-
+                    }
                     return analyticsResponse.Status.Equals("Succeeded")
                         ? analyticsResponse.RecognitionResult
                         : null;

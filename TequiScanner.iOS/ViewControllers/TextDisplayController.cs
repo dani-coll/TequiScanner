@@ -27,16 +27,24 @@ namespace TequiScanner.iOS.ViewControllers
 
         }
 
-        private void SetupUI() {
+        private void SetupUI()
+        {
             nfloat screenHeight = UIScreen.MainScreen.Bounds.Height;
             nfloat screenWidth = UIScreen.MainScreen.Bounds.Width;
             nfloat heightRatio = screenHeight / _imageHeight;
             nfloat widthRatio = screenWidth / _imageWidth;
 
 
-            UIScrollView scrollView = new UIScrollView(){
-                TranslatesAutoresizingMaskIntoConstraints = false
+            UIScrollView scrollView = new UIScrollView()
+            {
+                TranslatesAutoresizingMaskIntoConstraints = false,
+                ScrollEnabled = true
             };
+
+            scrollView.ContentSize = new CoreGraphics.CGSize(_imageWidth * 0.1, _imageHeight * 0.1);
+            scrollView.SizeToFit();
+            scrollView.Bounces = false;
+            scrollView.ContentMode = UIViewContentMode.ScaleAspectFill;
 
             View.AddSubview(scrollView);
             View.AddConstraint(NSLayoutConstraint.Create(scrollView, NSLayoutAttribute.Left, NSLayoutRelation.Equal, View, NSLayoutAttribute.Left, 1, 0));
@@ -46,8 +54,10 @@ namespace TequiScanner.iOS.ViewControllers
 
             View.BackgroundColor = Colors.BackgroundColor;
 
-            foreach(Line line in _recognition.Lines) {
-                UILabel label = new UILabel(){
+            foreach (Line line in _recognition.Lines)
+            {
+                UILabel label = new UILabel()
+                {
                     TranslatesAutoresizingMaskIntoConstraints = false,
                     Text = line.Text
                 };
@@ -56,10 +66,10 @@ namespace TequiScanner.iOS.ViewControllers
                 nfloat topPosition = line.BoundingBox[1];
                 nfloat rightPosition = line.BoundingBox[2];
                 nfloat bottomPosition = line.BoundingBox[5];
-                View.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Left, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, leftPosition));
-                View.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Top, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, topPosition));
-                View.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, rightPosition));
-                View.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, bottomPosition));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Left, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, leftPosition));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Top, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, topPosition));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, rightPosition));
+                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, bottomPosition));
 
             }
         }
