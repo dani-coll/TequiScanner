@@ -17,8 +17,9 @@ namespace TequiScanner.Shared.Services
         /// <summary>
         /// The key.
         /// Second key: 3da74e8f94b24ac5b6e9c797f633e7fa
+        /// f183c0b7195c4a6ea22efee295faa6e5
         /// </summary>
-        private readonly string _key = "f183c0b7195c4a6ea22efee295faa6e5";
+        private readonly string _key = "3da74e8f94b24ac5b6e9c797f633e7fa";
 
         /// <summary>
         /// Documentation for the API: https://www.microsoft.com/cognitive-services/en-us/computer-vision-api

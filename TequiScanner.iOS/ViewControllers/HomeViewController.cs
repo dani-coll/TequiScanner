@@ -13,6 +13,7 @@ namespace TequiScanner.iOS.ViewControllers
 
         private UIButton _takePhotoButton;
         private UIButton _galleryPhotoButton;
+        private UIActivityIndicatorView _activityIndicator;
 
         public HomeViewController()
         {
@@ -58,6 +59,20 @@ namespace TequiScanner.iOS.ViewControllers
 
             View.AddConstraint(NSLayoutConstraint.Create(_galleryPhotoButton, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterX, 1, 0));
             View.AddConstraint(NSLayoutConstraint.Create(_galleryPhotoButton, NSLayoutAttribute.Top, NSLayoutRelation.Equal, _takePhotoButton, NSLayoutAttribute.Bottom, 1, 10));
+
+            _activityIndicator = new UIActivityIndicatorView()
+            {
+                TranslatesAutoresizingMaskIntoConstraints = false
+            };
+            _activityIndicator.StartAnimating();
+            _activityIndicator.Hidden = true;
+            View.AddSubview(_activityIndicator);
+
+            View.AddConstraint(NSLayoutConstraint.Create(_activityIndicator, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterX, 1, 0));
+            View.AddConstraint(NSLayoutConstraint.Create(_activityIndicator, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, View, NSLayoutAttribute.CenterY, 1, 0));
+
+
+
         }
 
         private void TakePhotoButton_TouchUpInside(object sender, EventArgs e)
@@ -106,7 +121,9 @@ namespace TequiScanner.iOS.ViewControllers
 
         private async void Camera_FinishedPickingMedia(object sender, UIImagePickerMediaPickedEventArgs mediaPicker)
         {
-
+            _activityIndicator.Hidden = false;
+            _takePhotoButton.Hidden = true;
+            _galleryPhotoButton.Hidden = true;
             UIImage originalImage = mediaPicker.Info[UIImagePickerController.OriginalImage] as UIImage;
 
             NSData imgData = originalImage.AsJPEG(0.1f);
@@ -133,6 +150,11 @@ namespace TequiScanner.iOS.ViewControllers
                 alert.AddButton("Cancel");
                 alert.Show();
             }
+            _takePhotoButton.Hidden = false;
+            _galleryPhotoButton.Hidden = false;
+            _activityIndicator.Hidden = true;
+
+
         }
 
 

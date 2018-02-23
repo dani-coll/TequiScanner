@@ -41,9 +41,7 @@ namespace TequiScanner.iOS.ViewControllers
                 ScrollEnabled = true
             };
 
-            scrollView.ContentSize = new CoreGraphics.CGSize(_imageWidth * 0.1, _imageHeight * 0.1);
             scrollView.SizeToFit();
-            scrollView.Bounces = false;
             scrollView.ContentMode = UIViewContentMode.ScaleAspectFill;
 
             View.AddSubview(scrollView);
@@ -56,22 +54,30 @@ namespace TequiScanner.iOS.ViewControllers
 
             foreach (Line line in _recognition.Lines)
             {
-                UILabel label = new UILabel()
+
+                foreach (Word word in line.Words)
                 {
-                    TranslatesAutoresizingMaskIntoConstraints = false,
-                    Text = line.Text
-                };
-                scrollView.AddSubview(label);
-                nfloat leftPosition = line.BoundingBox[0];
-                nfloat topPosition = line.BoundingBox[1];
-                nfloat rightPosition = line.BoundingBox[2];
-                nfloat bottomPosition = line.BoundingBox[5];
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Left, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, leftPosition));
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Top, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, topPosition));
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, rightPosition));
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, bottomPosition));
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Right, 1, 0));
-                scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Bottom, 1, 0));
+                    UIFont font = UIFont.FromName("Helvetica", word.BoundingBox[7] - word.BoundingBox[1]);
+
+                    UILabel label = new UILabel()
+                    {
+                        TranslatesAutoresizingMaskIntoConstraints = false,
+                        Text = word.Text,
+                        Font = font
+                    };
+                    scrollView.AddSubview(label);
+                    nfloat leftPosition = word.BoundingBox[0];
+                    nfloat topPosition = word.BoundingBox[1];
+                    nfloat rightPosition = word.BoundingBox[2];
+                    nfloat bottomPosition = word.BoundingBox[5];
+
+                    scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Left, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, leftPosition));
+                    scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Top, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, topPosition));
+                    //scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Left, 1, rightPosition));
+                    scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, scrollView, NSLayoutAttribute.Top, 1, bottomPosition));
+                    scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Right, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Right, 1, 0));
+                    scrollView.AddConstraint(NSLayoutConstraint.Create(label, NSLayoutAttribute.Bottom, NSLayoutRelation.LessThanOrEqual, scrollView, NSLayoutAttribute.Bottom, 1, 0));
+                }
 
             }
         }
